@@ -1,0 +1,17 @@
+# dependencies
+node_modules
+
+#IDE
+.idea
+
+# logs
+npm-debug.log
+
+# Nuxt build
+.nuxt
+
+# Nuxt generate
+dist
+.DS_Store
+venv
+__pycache__
