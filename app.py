@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask, jsonify, request, Response, Request, abort
+from flask import Flask, jsonify, request, Response, abort
 from flask_cors import CORS
-from pkg_app import menu
-from iastables import ps_classes
+import entity
 from pkg_auth import OAuth, oa_config
 from functools import wraps
 import logging
-import zlib
+
 
 HEADER_NAME = "AUTH-TOKEN"
 CHECK_KEY = "iMjy8ysuPr3q7xApOGRF"
@@ -15,7 +14,7 @@ DEBUG = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 CORS(app)
-SESS = ps_classes.get_session()
+SESS = entity.get_session()
 logging.basicConfig(level=logging.DEBUG, format='%(lineno)d %(asctime)s %(message)s')
 
 
@@ -74,18 +73,12 @@ def spa_start_session():
     return jsonify(res)
 
 
-@app.route('/spa/menu')
-def spa_menu():
-    _menu = menu.get_menu_items(SESS)
-    return jsonify(_menu)
-
-
 @app.route('/api/refs/<ref_name>')
 @ret_json
 def get_refs_data(ref_name):
     """возврат справочников"""
     try:
-        _res = ps_classes.get_refs_data(SESS, ref_name)
+        _res = entity.get_refs_data(SESS, ref_name)
         return _res
     except KeyError:
         return abort(404)
@@ -97,7 +90,7 @@ def get_refs_data(ref_name):
 def get_entity_data(entity_name, entity_id):
     """возврат сущности"""
     try:
-        _res = ps_classes.get_entity_data(SESS, entity_name, entity_id)
+        _res = entity.get_entity_data(SESS, entity_name, entity_id)
         return _res
     except KeyError:
         return abort(404)
@@ -108,7 +101,7 @@ def get_entity_data(entity_name, entity_id):
 def get_lines_data(lines_name, entity_id):
     """возврат сущности"""
     try:
-        _res = ps_classes.get_entity_lines_data(SESS, lines_name, entity_id)
+        _res = entity.get_entity_lines_data(SESS, lines_name, entity_id)
         return _res
     except KeyError:
         return abort(404)
@@ -118,7 +111,7 @@ def get_lines_data(lines_name, entity_id):
 @ret_json
 def edit_entity_data(entity_name, entity_id):
     """редактирование сущности"""
-    _res = ps_classes.set_entity_data(SESS, entity_name, entity_id, request.data)
+    _res = entity.set_entity_data(SESS, entity_name, entity_id, request.data)
     return _res
 
 
@@ -127,7 +120,7 @@ def edit_entity_data(entity_name, entity_id):
 def set_lines_data(lines_name, entity_id):
     """возврат сущности"""
     try:
-        _res = ps_classes.set_entity_lines_data(SESS, lines_name, entity_id, request.data)
+        _res = entity.set_entity_lines_data(SESS, lines_name, entity_id, request.data)
         return '{"result": "ok"}'
     except KeyError:
         return abort(404)
@@ -140,7 +133,7 @@ def list_organization_poll():
     """список опросов"""
     year = request.args.get('year')
     id_mrigo = request.args.get('id_mrigo')
-    _res = ps_classes.get_organization_poll(SESS, year, id_mrigo)
+    _res = entity.get_organization_poll(SESS, year, id_mrigo)
     return _res
 
 
