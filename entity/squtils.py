@@ -35,6 +35,27 @@ def json2attrs(_tclass, _data):
     return _res
 
 
+def rpc2resp(res=None, _id=0, error_code=None, error_message=None):
+    """
+    Возврат результата выполнения процедуры
+    :param res:
+    :param _id:
+    :param error_code:
+    :param error_message:
+    :return:
+    """
+    _res = ""
+    if error_code is not None:
+        _res = json.dumps({"jsonrpc": "2.0",
+                           "error": {"code": error_code, "message": error_message},
+                           "id": _id})
+    else:
+        _res = json.dumps({"jsonrpc": "2.0",
+                           "result": res,
+                           "id": _id})
+    return _res
+
+
 def new_alchemy_encoder(revisit_self=False, fields_to_expand=[]):
     _visited_objs = []
 

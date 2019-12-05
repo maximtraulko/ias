@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, text, Text, TIMESTAMP, Float, JSON, Date, Numeric, Table
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, text, Text, TIMESTAMP, Float, JSON, Date, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import logging
@@ -32,7 +32,8 @@ class IasResumeOnePosition(Base):
     __tablename__ = 'ias_resume_one_position'
     __table_args__ = {'schema': 'vacs'}
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('\"vacs\".ias_resume_one_position_id_seq'::regclass)"))
+    id = Column(Integer, primary_key=True,
+                server_default=text("nextval('\"vacs\".ias_resume_one_position_id_seq'::regclass)"))
     id_ias_resume_clean = Column(ForeignKey('vacs.ias_resume_clean.id'))
     pos_name = Column(String(512), nullable=False)
     pos_coeff = Column(Float(53), nullable=False)
@@ -51,7 +52,7 @@ class Okved(Base):
 
 
 class VwOkved(Base):
-    __tablename__ = 'vw_okved'
+    __tablename__ = 'vw_okveds'
     __table_args__ = {'schema': 'data'}
 
     id = Column(Integer, primary_key=True, server_default=text("nextval('\"data\".okved_id_seq'::regclass)"))
@@ -178,7 +179,8 @@ class InvestProjOkved(Base):
     __tablename__ = 'invest_proj_okved'
     __table_args__ = {'schema': 'data'}
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('\"data\".invest_proj_okved_id_seq'::regclass)"))
+    id = Column(Integer, primary_key=True,
+                server_default=text("nextval('\"data\".invest_proj_okved_id_seq'::regclass)"))
     id_invest_proj = Column(ForeignKey('data.invest_proj.id', ondelete='CASCADE'), nullable=False)
     id_okved = Column(ForeignKey('data.okved.id', ondelete='CASCADE'), nullable=False)
     dateadd = Column(DateTime, nullable=False, server_default=text("now()"))
@@ -191,7 +193,8 @@ class OrganizationPollForm(Base):
     __tablename__ = 'organization_poll_form'
     __table_args__ = {'schema': 'data'}
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('\"data\".organization_poll_form_id_seq'::regclass)"))
+    id = Column(Integer, primary_key=True,
+                server_default=text("nextval('\"data\".organization_poll_form_id_seq'::regclass)"))
     id_organization = Column(ForeignKey('data.organization.id', ondelete='CASCADE'), nullable=False)
     id_poll = Column(ForeignKey('data.organization_poll.id'), nullable=False)
     id_status = Column(ForeignKey('data.organization_poll_form_status.id'), nullable=False)
@@ -206,7 +209,8 @@ class OrganizationPoll(Base):
     __tablename__ = 'organization_poll'
     __table_args__ = {'schema': 'data'}
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('\"data\".organization_poll_id_seq'::regclass)"))
+    id = Column(Integer, primary_key=True,
+                server_default=text("nextval('\"data\".organization_poll_id_seq'::regclass)"))
     year_for = Column(Integer, nullable=False)
     date_start = Column(Date)
     date_finish = Column(Date)
@@ -217,7 +221,8 @@ class OrganizationPollFormStatu(Base):
     __tablename__ = 'organization_poll_form_status'
     __table_args__ = {'schema': 'data'}
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('\"data\".organization_poll_form_status_id_seq'::regclass)"))
+    id = Column(Integer, primary_key=True,
+                server_default=text("nextval('\"data\".organization_poll_form_status_id_seq'::regclass)"))
     name = Column(String(64), nullable=False)
     dateadd = Column(DateTime, nullable=False, server_default=text("now()"))
 
@@ -284,7 +289,7 @@ class VwInvestProjYears(Base):
 class VWOrganizationPollForm(Base):
     __tablename__ = 'vw_organization_poll_form'
     __table_args__ = {'schema': 'data'}
-    id_organization_poll = Column(Integer,primary_key=True)
+    id_organization_poll = Column(Integer, primary_key=True)
     id_organization = Column(Integer)
     dateadd = Column(DateTime)
     organization_name = Column(String(1024))
@@ -319,9 +324,3 @@ REFS_CLASSES = {'okz': Okz, 'okved': VwOkved, 'okso': Okso, 'okpdtr': Okpdtr, 'o
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(lineno)d %(asctime)s %(message)s')
-
-
-
-
-
-
