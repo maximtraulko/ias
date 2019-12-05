@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="f5d544e5-ac24-4ea9-9292-6cba2b963571" name="ias-dev" url="http://ssh.cloud.nstu.ru">
+        <fileTransfer host="ssh.cloud.nstu.ru" port="5173" rootFolder="/home/dba/ias" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="5173" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
