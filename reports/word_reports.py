@@ -3,18 +3,18 @@
 import psycopg2
 import datetime
 import psycopg2.extras
+import logging
 from docxtpl import DocxTemplate
-postgreSQL_connect = "dbname='ias' user='dba' host='217.71.129.139' port='4194' password='UdrqNjWx'"
-name_view = 'vw_rep_form_12'
+from entity import get_connection
 
 
-def get_record():
-    connection_postgreSQL = psycopg2.connect(postgreSQL_connect)
-    cursor_postgreSQL = connection_postgreSQL.cursor(cursor_factory=psycopg2.extras.RealDictCursor) #psycopg2.extras.DictCursor
-    cursor_postgreSQL.execute("SELECT * FROM {0}".format(name_view))
-    data = cursor_postgreSQL.fetchall() #['р-ны Новосибирска', '00.01', 'Тестовая организация', 'Текстовая запись ОКПДТР.1', '0.1', '7211', 'СПО', 'Тестовая запись1', 1, 3, 1, 985, 1, 10, 11, 12, 13, 14, 15]
-    # print(data)
-    # print(data[0]['raion'])
+def get_vw_rep_form_12(conn):
+    curr = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    curr.execute("SELECT * FROM vw_rep_form_12")
+    data = curr.fetchall()
+    #['р-ны Новосибирска', '00.01', 'Тестовая организация', 'Текстовая запись ОКПДТР.1', '0.1', '7211', 'СПО', 'Тестовая запись1', 1, 3, 1, 985, 1, 10, 11, 12, 13, 14, 15]
+    logging.debug(data)
+    logging.debug(data[0]['raion'])
 
     len_data = len(data)
     for i in range(0, len_data):
@@ -22,18 +22,22 @@ def get_record():
         data[i]['y_6'] = n6
     return data
 
-def create_record(data, templ_path):
-    tpl_name = templ_path + 'templates/list.docx'
+
+def render_vw_rep_form_12(conn, templ_path):
+    data = get_vw_rep_form_12(conn)
+    tpl_name = templ_path + 'templates/rep_form_12.docx'
     tpl = DocxTemplate(tpl_name)
 
     today = datetime.datetime.today()
     date_here = (today.strftime("%Y.%m.%d-%H.%M.%S"))
-    tpl.render({'data': data})# '
-    gen_path = templ_path+'generated/list-{0}.docx'.format(date_here)
+    tpl.render({'data': data})
+    gen_path = templ_path+'generated/rep_form_12-{0}.docx'.format(date_here)
     tpl.save(gen_path)
     return gen_path
 
+
 if __name__ == '__main__':
-    data_data = get_record()
-    if data_data:
-        create_record(data_data, "")
+    logging.basicConfig(level=logging.DEBUG, format='%(lineno)d %(asctime)s %(message)s')
+    res = render_vw_rep_form_12(get_connection(), "")
+    logging.debug(res)
+

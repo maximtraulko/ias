@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Про что этот файл?"""
 import logging
+import psycopg2
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -18,6 +19,15 @@ def get_session():
     _sess = sessionmaker(bind=create_engine('postgresql://{0}:{1}@{2}:{3}/{4}'.format(
         db_config.USER, db_config.PASSWORD, db_config.HOST, db_config.PORT, db_config.DB)))()
     return _sess
+
+
+def get_connection():
+    """
+    Возврат соединения
+    """
+    _conn = psycopg2.connect("dbname='{4}' user='{0}' host='{2}' port='{3}' password='{1}'".format(
+        db_config.USER, db_config.PASSWORD, db_config.HOST, db_config.PORT, db_config.DB))
+    return _conn
 
 
 def json2attrs(_tclass, _data):
