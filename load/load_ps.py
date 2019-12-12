@@ -7,7 +7,7 @@ import psycopg2
 from openpyxl import load_workbook
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from iastables import ps_classes
+from entity import *
 
 
 MAX_ROWS = 100
@@ -129,7 +129,7 @@ def process_sheet(sheet, vdb):
     if sheet.cell(row=START_ROW, column=1).value is None:
         return
     ps_params = get_row_data(sheet, range(START_COLUMN, PARAM_COLS+1))
-    ps = ps_classes.get_ps_standart(vdb, sheet.title)
+    ps = get_ps_standart(vdb, sheet.title)
     ps.name = ps_params[2]
     ps.date_accepted = ps_params[3]
     ps.remark = ps_params[0]
@@ -140,7 +140,7 @@ def process_sheet(sheet, vdb):
     ps.tf_cnt = cnt_tf
     vdb.add(ps)
     # logging.debug(ps.id)
-    ps_okz_lines = [ps_classes.get_ps_okz(vdb, ps, x) for x in ps_okz]
+    ps_okz_lines = [get_ps_okz(vdb, ps, x) for x in ps_okz]
     for t in ps_okz_lines:
         try:
             vdb.add(t)
@@ -148,7 +148,7 @@ def process_sheet(sheet, vdb):
         except Exception as e:
             logging.error(e)
             vdb.rollback()
-    ps_okso_lines = [ps_classes.get_ps_okso(vdb, ps, x) for x in ps_okso]
+    ps_okso_lines = [get_ps_okso(vdb, ps, x) for x in ps_okso]
     for t in ps_okso_lines:
         try:
             vdb.add(t)
@@ -156,7 +156,7 @@ def process_sheet(sheet, vdb):
         except Exception as e:
             logging.error(e)
             vdb.rollback()
-    ps_okved_lines = [ps_classes.get_ps_okved(vdb, ps, x) for x in ps_okved]
+    ps_okved_lines = [get_ps_okved(vdb, ps, x) for x in ps_okved]
     for t in ps_okved_lines:
         try:
             vdb.add(t)
@@ -165,7 +165,7 @@ def process_sheet(sheet, vdb):
             logging.error(e)
             vdb.rollback()
     tf_levels = get_tf_data_one(sheet, TF_LEVEL, cnt_tf)
-    ps_tfs = [ps_classes.get_ps_tf(vdb, ps, xi, x) for xi, x in enumerate(tf_levels)]
+    ps_tfs = [get_ps_tf(vdb, ps, xi, x) for xi, x in enumerate(tf_levels)]
     for t in ps_tfs:
         try:
             vdb.add(t)
@@ -184,7 +184,7 @@ def process_sheet(sheet, vdb):
         logging.debug('num - {} val - {} tf_profs -{} cnt_tf - {} '.format(it, t, tf_profs, cnt_tf))
         for tp in tf_profs[it]:
             try:
-                a = ps_classes.get_ps_tf_prof(vdb, t, tp)
+                a = get_ps_tf_prof(vdb, t, tp)
                 vdb.add(a)
                 vdb.commit()
             except Exception as e:
@@ -192,7 +192,7 @@ def process_sheet(sheet, vdb):
                 vdb.rollback()
         for ts in tf_stages[it]:
             try:
-                a = ps_classes.get_ps_tf_stage(vdb, t, ts)
+                a = get_ps_tf_stage(vdb, t, ts)
                 vdb.add(a)
                 vdb.commit()
             except Exception as e:
@@ -200,7 +200,7 @@ def process_sheet(sheet, vdb):
                 vdb.rollback()
         for too in tf_oksos[it]:
             try:
-                a = ps_classes.get_ps_educ_reqs(vdb, t, too)
+                a = get_ps_educ_reqs(vdb, t, too)
                 vdb.add(a)
                 vdb.commit()
             except Exception as e:
@@ -208,7 +208,7 @@ def process_sheet(sheet, vdb):
                 vdb.rollback()
         for to1 in tf_okso[it]:
             try:
-                a = ps_classes.get_ps_tf_okso(vdb, t, to1)
+                a = get_ps_tf_okso(vdb, t, to1)
                 vdb.add(a)
                 vdb.commit()
             except Exception as e:
@@ -216,7 +216,7 @@ def process_sheet(sheet, vdb):
                 vdb.rollback()
         for tsp in tf_okz[it]:
             try:
-                a = ps_classes.get_ps_access_reqs(vdb, t, tsp)
+                a = get_ps_access_reqs(vdb, t, tsp)
                 vdb.add(a)
                 vdb.commit()
             except Exception as e:
@@ -224,7 +224,7 @@ def process_sheet(sheet, vdb):
                 vdb.rollback()
         for tsr in tf_okdptr[it]:
             try:
-                a = ps_classes.get_ps_okdptr(vdb, t, tsr)
+                a = get_ps_okdptr(vdb, t, tsr)
                 vdb.add(a)
                 vdb.commit()
             except Exception as e:

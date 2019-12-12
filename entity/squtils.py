@@ -3,7 +3,7 @@
 """Про что этот файл?"""
 import logging
 from sqlalchemy.ext.declarative import DeclarativeMeta
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,DateTime
 from sqlalchemy.orm import sessionmaker
 import json
 import db_config
@@ -70,12 +70,14 @@ def new_alchemy_encoder(revisit_self=False, fields_to_expand=[]):
 
                 # go through each field in this SQLalchemy class
                 fields = {}
-                for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata' and x != 'dateadd']:
+                for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata' and x != 'dateadd' and x != 'date_added']:
                     val = obj.__getattribute__(field)
                     if type(val) == datetime.date:
                         val = str(val)
                     if type(val) == decimal.Decimal:
                         val = int(val)
+                    if type(val) == DateTime:
+                        val = str(val)
                     # is this field another SQLalchemy object, or a list of SQLalchemy objects?
                     if isinstance(val.__class__, DeclarativeMeta) or (isinstance(val, list) and len(val) > 0 and isinstance(val[0].__class__, DeclarativeMeta)):
                         # unless we're expanding this field, stop here
