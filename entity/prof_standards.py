@@ -97,8 +97,8 @@ class ProfTfEducReq(Base):
 
     id = Column(Integer, primary_key=True, server_default=text("nextval('data.prof_tf_educ_reqs_id_seq'::regclass)"))
     id_prof_tf = Column(ForeignKey('data.prof_tf.id'), nullable=False)
-    educ_req = Column(String(1024), nullable=False)
-    remark = Column(String(1024))
+    educ_req = Column(String(4000), nullable=False)
+    remark = Column(String(4000))
     load_date = Column(DateTime, server_default=text("now()"))
 
     prof_tf = relationship('ProfTf')
@@ -154,6 +154,18 @@ class ProfTfStageReq(Base):
     load_date = Column(DateTime, server_default=text("now()"))
 
     prof_tf = relationship('ProfTf')
+
+
+class UtlSPOGosFgos(Base):
+    __tablename__ = 'utl_spo_gos_fgos'
+    __table_args__ = {'schema': 'data'}
+
+    id = Column(Integer, primary_key=True, server_default=text("nextval('data.utl_spo_gos_fgos_id_seq'::regclass)"))
+    code_fgos = Column(String(32), nullable=False)
+    name_fgos = Column(String(1024), nullable=False)
+    code_gos = Column(String(32), nullable=False)
+    name_gos = Column(String(1024), nullable=False)
+
 
 
 def get_ps_standart(sess, vcode):

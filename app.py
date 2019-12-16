@@ -3,9 +3,10 @@
 from flask import Flask, jsonify, request, Response, abort
 from flask_cors import CORS
 import entity
-from pkg_auth import OAuth, oa_config
+from pkg_auth import ias_auth
 from functools import wraps
 import logging
+import json
 
 
 HEADER_NAME = "AUTH-TOKEN"
@@ -27,7 +28,11 @@ def ret_json(func):
             if client_key == CHECK_KEY:
                 return Response(func(*args, **kwargs), content_type='application/json; charset=utf-8')
             else:
-                return abort(401)
+                r = json.loads(ias_auth.check_token(SESS, client_key))
+                if r['login'] is not None:
+                    return Response(func(*args, **kwargs), content_type='application/json; charset=utf-8')
+                else:
+                    return abort(401)
         except KeyError:
             return abort(403)
     return decorated_function
@@ -51,26 +56,11 @@ def hello_world():
     return '.'
 
 
-@app.route('/spa/check_auth')
-def spa_check_auth():
-    OAuth.OA.init(oa_config.CONFIG['sso'])
-    app.logger.debug(request)
-    token = OAuth.OA.get_token(request)
-    auth_data = OAuth.OA.validate_token(token)
-    app.logger.debug(auth_data)
-    res = 1
-    return jsonify(res)
-
-
-@app.route('/spa/start_session')
+@app.route('/api/auth', methods=['POST'])
 def spa_start_session():
-    OAuth.OA.init(oa_config.CONFIG['sso'])
-    app.logger.debug(request.headers)
-    token = OAuth.OA.get_token(request)
-    auth_data = OAuth.OA.validate_token(token)
-    app.logger.debug(auth_data)
-    res = 1
-    return jsonify(res)
+    params = json.loads(request.data)
+    res = ias_auth.auth_user(SESS, params['login'], params['pass'])
+    return res
 
 
 @app.route('/api/refs/<ref_name>')
@@ -118,16 +108,15 @@ def edit_entity_data(entity_name, entity_id):
 @app.route('/api/set/lines/<lines_name>/<int:entity_id>', methods=['POST'])
 @ret_json
 def set_lines_data(lines_name, entity_id):
-    """возврат сущности"""
+    """редактирование строк сущности"""
     try:
         _res = entity.set_entity_lines_data(SESS, lines_name, entity_id, request.data)
-        return '{"result": "ok"}'
+        return _res
     except KeyError:
         return abort(404)
 
 
 @app.route('/api/list/organization_poll', methods=['GET'])
-@app.route('/api/list/organization_poll/', methods=['GET'])
 @ret_json
 def list_organization_poll():
     """список опросов"""
